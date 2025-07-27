@@ -1,0 +1,8 @@
+falls jenkins server, erhält man Hinweis mit IP:Port
+ssh -L 6868:IPJENKINS:PORTJENKINS User@IPzumangreifen
+im Browser dann localhost:6868 und man sollte eine Loginseite sehen
+
+IPJENKINS:PORTJENKINS als Proxy in Burp Suite
+dann random Username und Passwort eingeben
+
+auf Jenkins script console kann man von revshells eine eine reverse shell eingeben in groovy

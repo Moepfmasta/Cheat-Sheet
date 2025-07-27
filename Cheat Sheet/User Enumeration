@@ -1,0 +1,9 @@
+wpscan --url http://derpnstink.local/weblog -e u
+WPScan: listet gefundene WordPress‑User auf.
+
+wpscan --url http://192.168.1.205/S3cr3t/ --enumerate u
+WPScan‑User‑Enumeration auf spezifiziertem Pfad.
+
+enum4linux -U 192.168.1.160
+Listet Windows‑User via SMB aus.
+

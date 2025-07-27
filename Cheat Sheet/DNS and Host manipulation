@@ -1,0 +1,5 @@
+echo '192.168.1.231 derpnstink.local' >> /etc/hosts
+Fügt lokalen Host‑Eintrag für Domain‑Auflösung hinzu.
+
+echo '192.168.1.231 derpnstink.local' | sudo tee -a /etc/hosts
+Selbes wie oben, aber mit Root‑Rechten über sudo tee

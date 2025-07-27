@@ -1,0 +1,38 @@
+nikto -h http://foo.com scans the host
+nikto -h http://foo.com -port 8000 Scans the specified port
+
+Gobuster
+gobuster dir -u http://192.168.1.155 --wordlist=/usr/share/wordlists/dirb/common.txt
+oder gobuster dir -u http://192.168.1.155 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+Sucht nach Verzeichnissen auf dem Server (z. B. /dev, /robots.txt, /admin) mit einer Wortliste.
+
+Dirb
+dirb http://192.168.1.231
+Ähnlich wie Gobuster, sucht Verzeichnisse und Dateien, z. B. /weblog bei WordPress-Seiten.
+
+Nikto
+nikto -h http://192.168.2.69
+Scannt die Website auf Schwachstellen und findet Pfade wie /admin, /readme, /wp-login.php.
+
+Wpscan
+wpscan --url http://derpnstink.local/weblog -e u
+Listet Benutzer (-e u) einer WordPress-Seite auf (z. B. admin).
+
+wpscan --url http://192.168.1.205/S3cr3t/ --plugin-detection aggressive
+Erkennt Plugins aggressiv, z. B. akismet, duplicator.
+
+Curl/Wget
+curl http://192.168.1.69/robots.txt
+Ruft den Inhalt von robots.txt ab.
+
+Wget
+wget http://192.168.1.69/fsociety.dic
+Lädt eine Datei (z. B. Wortliste) herunter.
+
+Proxychains
+proxychains nikto -h http://192.168.2.69
+Nikto-Scan über Proxychains (langsamer, weniger effektiv als feroxbuster).
+
+Feroxbuster
+proxychains feroxbuster -u http://192.168.2.69 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 20
+Bruteforce-Scan für Verzeichnisse über Proxychains mit 20 Threads.

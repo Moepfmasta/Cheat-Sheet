@@ -1,0 +1,17 @@
+smbclient -L //<IP-ODER-HOSTNAME> -U <BENUTZERNAME>
+
+smbclient -L //192.168.1.100 -N
+unterdrückt Passwortabfrage und verwendet keinen Benutzernamen
+
+smbclient \\\\IP\Sharename
+verbindet mit einem Share, der ungesichert ist
+
+get Filename
+lädt es herunter
+
+nmap -p PORT --script=nfs-ls,nfs-statfs,nfs-showmount MACHINE_IP
+um zu sehen, welche Directory man mounten kann
+
+smbmap -H ip zeigt auch Shares
+
+nmblookup -A IP zeigt evtl Name von User an

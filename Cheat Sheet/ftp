@@ -1,0 +1,6 @@
+ftp IP
+mit login Anonymous funktioniert manchmal und Passwort leer
+
+mit get File in der ftp shell kann man Dateien einfach herunterladen
+
+put File mit gleichem Namen wie das existierende ersetzt z.B. das Existierende mit einem File, in dem man zuvor eine reverse Shell einfügte

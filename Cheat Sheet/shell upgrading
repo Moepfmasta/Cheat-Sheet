@@ -1,0 +1,6 @@
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Ctrl+Z - verbindet danach automatisch wieder
+stty raw -echo
+fg
+export TERM=xterm
+

@@ -1,0 +1,27 @@
+nmap Portscans:
+sudo nmap -flag IP oder nmap 192.168.1.0/24 für Subnetz
+Flags:
+-sS	nmap 192.168.1.1 -sS	TCP SYN port scan (Default)
+-sT	nmap 192.168.1.1 -sT	TCP connect port scan (Default without root privilege)
+-sU	nmap 192.168.1.1 -sU	UDP port scan
+-sA	nmap 192.168.1.1 -sA	TCP ACK port scan
+-sW	nmap 192.168.1.1 -sW	TCP Window port scan
+-sM	nmap 192.168.1.1 -sM	TCP Maimon port scan
+-p	nmap 192.168.1.1 -p-	Port scan all ports
+-sV	nmap 192.168.1.1 -sV	Attempts to determine the version of the service running on port
+-A	nmap 192.168.1.1 -A	Enables OS detection, version detection, script scanning, and traceroute
+-O	nmap 192.168.1.1 -O	Remote OS detection using TCP/IP stack fingerprinting
+-sS (TCP SYN scan): Sends a SYN packet to each target port. If the port is open, it receives a SYN/ACK response, allowing Nmap to identify open ports without establishing a full TCP connection.
+-sU (UDP scan): Sends UDP packets to target ports. This is used to discover open UDP ports, which are often used for services like DNS, SNMP, and DHCP.
+-sV (Version detection): Probes open ports to determine the service and version information of the software running on the target.
+-sA (TCP ACK scan): This scan type is used to determine whether a firewall is present and filtering traffic. It sends ACK packets and analyzes the responses to infer firewall rules.
+-sC auch oft hilfreich
+-oN für normal Output
+--script=vuln für Anzeige nach Schwachstellen
+
+dig,
+
+ffuf -u http://10.10.113.230:Port/FUZZ -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-large-directories.txt
+ähnlich zu gobuster für Directories
+ffuf -u http://10.10.113.230:Port/FUZZ -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-large-files.txt
+für Files auf der Website

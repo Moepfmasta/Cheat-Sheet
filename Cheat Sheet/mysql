@@ -1,0 +1,6 @@
+Mysql -uroot -p, Passwort mysql eingeben und man hat Zugang
+Show databases;
+Use wordpress;
+Show datatables;
+Select * from wp_users
+wenn username root hier

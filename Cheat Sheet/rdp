@@ -1,0 +1,1 @@
+xfreerdp /u:<BENUTZERNAME> /p:<PASSWORT> /v:<IP-ODER-HOSTNAME>

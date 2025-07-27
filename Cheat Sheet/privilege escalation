@@ -43,3 +43,9 @@ für allaccess Exploit
 
 findstr /si password *.xml *.ini *.txt 
 auf Windows Passwortdatei finden
+
+id
+für Kernelversion auf Linux 
+
+x86_64-w64-mingw32-gcc winrev.c -o winrev.exe -lws2_32
+für .exe Compilierung

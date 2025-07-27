@@ -13,7 +13,7 @@ find / -perm -4000 -type f 2>/dev/null
 Sucht nach SUID-Binaries (z. B. nmap) für Privilege Escalation.
 
 nmap --interactive + !sh
-Nutzt Nmap mit SUID-Bit, um eine Root-Shell zu erhalten.
+Nutzt Nmap mit SUID-Bit, um eine Root-Shell zu erhalten, wenn nach oberem Befehl das SUID dafür gefunden wurde
 
 Windows
 

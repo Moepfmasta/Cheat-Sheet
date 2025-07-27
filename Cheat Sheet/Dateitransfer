@@ -34,3 +34,6 @@ scp vuln@192.168.1.105:/Users/vuln/flag.txt Vulnbox zu Kali
 scp exploit.ps1 vuln@192.168.1.105:C:/Users/vuln/Desktop/ Kali zu Vulnbox
 
 sshpass -p ‚Password‘ ssh kali@localhost
+
+rlwrap nc -nlvp 4444 
+falls nur verschlüsselt möglich wegen Windows Defender

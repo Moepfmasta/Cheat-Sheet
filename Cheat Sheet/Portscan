@@ -19,6 +19,9 @@ Flags:
 -oN für normal Output
 --script=vuln für Anzeige nach Schwachstellen
 
+nmap -sn IP/24 oder nmap IP/24
+Ping Sweep
+
 dig,
 
 ffuf -u http://10.10.113.230:Port/FUZZ -w /usr/share/wordlists/seclists/Discovery/Web-Content/raft-large-directories.txt
